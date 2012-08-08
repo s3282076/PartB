@@ -16,7 +16,7 @@
 	
 		require 'db.php';
 
-		function displayWineList($connection, $query, $wineName, $wineryName){
+		function displayWineList($connection, $query){
 			if(!($result= @ mysql_query ($query, $connection))){
 				showerror();
 			}
@@ -24,9 +24,9 @@
 		$rowsFound = @ mysql_num_rows($result);
 
 		if($rowsFound > 0){
-			print  "Wine belonging to wineStore database<br>";
 		
-			print	"\n<table>\n<tr>".
+			print	"\n<fieldset>".
+				"\n<table>\n<tr>".
 				"\n\t<th>Wine Name</th>" .
 				"\n\t<th>Winery Name </th>" .
 				"\n\t<th>Region Name </th>" .
@@ -41,6 +41,7 @@
 					"\n\t<td>{$row["winery_name"]}</td>" .
 					"\n\t<td>{$row["region_name"]}</td>" .
 					"\n\t<td>{$row["variety"]}</td>" .
+					"\n\t<td>{$row["year"]}</td>" .
 					"\n\t<td>{$row["on_hand"]}</td>" .
 					"\n\t<td>{$row["qty"]}</td>" .
 					"\n\t<td>{$row["cost"]}</t>\n</tr>";	
@@ -49,6 +50,7 @@
 		}
 
 		print "{$rowsFound} records found matching your criteria<br>";
+		print "\n</fieldset>";
 	}
 	
 	if(! ($connection = @ mysql_connect(DB_HOST, DB_USER, DB_PW))){
@@ -68,20 +70,20 @@
 	if (!mysql_select_db(DB_NAME, $connection)){
 		showerror();
 	}
-
-	$query =	"SELECT wine_id, wine_name, winery_name
-			FROM wine, winery
-			WHERE wine.winery_id = winery.winery_id";
-
-	if (isset($wineName) && $wineName != "All"){
+	
+	$query = "SELECT wine_id, wine_name, winery_name, year
+			 FROM wine, winery
+			 WHERE wine.winery_id = winery.winery_id";
+	
+	if (isset($wineName) && $wineName != NULL){
 		$query .= " AND wine_name = '{$wineName}'";
 	}
 
-	if(isset($wineryName) && $wineryName !="All"){
+	if(isset($wineryName) && $wineryName != NULL){
 		$query .= " AND winery_name = '{$wineryName}'";
 	}
 	
-	displayWineList($connection, $query, $wineName, $wineryName);
+	displayWineList($connection, $query);
 	?>	
 	</body>
 <html>
